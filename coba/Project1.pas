@@ -7,7 +7,7 @@ Var
    ch       : char;
    token    : String;
    kategori : String;
-   i        : Integer;
+   i,k      : Integer;
    kutip    : boolean;
 
 procedure addToken;
@@ -1235,15 +1235,27 @@ begin
 
         if token <> '' then begin
             i := i + 1;
+            k := k + 1;
+
+            if i = 22 then begin
+                GotoXY(35,7+i); Write('tekan enter untuk lanjutkan');
+                i := 1;
+                readln;
+                clrscr;
+            end;
+
             gotoxy(30,7+i); write('|    |                  |                      |');
-            GotoXY(32,7+i); Write(i);
+            GotoXY(32,7+i); Write(k);
             GotoXY(37,7+i); Write(token);
             GotoXY(62,7+i); Write(kategori);
+
+
+
 
             token := '';
             kategori := '';
         end;
-        //readln;
+        gotoxy(30,7); write('------------------------------------------------');
     end;
     Close(f);
 end;
