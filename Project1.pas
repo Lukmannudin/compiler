@@ -7,7 +7,7 @@ Var
    ch       : char;
    token    : String;
    kategori : String;
-   i        : Integer;
+   i,k      : Integer;
    kutip    : boolean;
 
 procedure addToken;
@@ -17,16 +17,6 @@ begin
     begin
         token := token + ch;
         kategori := 'identifier';
-    end
-    else if (kutip = true) then
-    begin
-      token := token + ch;
-      kategori := 'identifier';
-    end
-    else
-    begin
-      token := '';
-      kategori := '';
     end;
 end;
 
@@ -1206,30 +1196,27 @@ begin
             while (ch in['0'..'9']) do
             begin
                  kategori := 'typeint';
-                addToken;
+                 addToken;
             end;
-            //if not (ch in[#33..#127]) then
+
+            if ch = '.' then
+            begin
+                addToken;
+                while (ch in['0'..'9']) do
+                      addToken;
+                kategori := 'typereal';
+            end
+            else
+            begin
+                kategori := 'typeint';
+            end;
+
+            //if not ((ch in['0'..'9'])) then
             //begin
             //    // typeint
             //    kategori := 'typeint';
             //end;
 
-            //while (ch in['0'..'9']) do
-            //begin
-            //    addToken;
-            //    if ch = '.' then
-            //    begin
-            //        addToken;
-            //        kategori := 'typereal';
-            //        while (ch in['0'..'9']) do
-            //              addToken;
-            //
-            //    end
-            //    else
-            //    begin
-            //        kategori := 'typeint';
-            //    end;
-            //end;
         end
 
         // Ea
@@ -1247,16 +1234,28 @@ begin
         end;
 
         if token <> '' then begin
-            i := i +1;
+            i := i + 1;
+            k := k + 1;
+
+            if i = 22 then begin
+                GotoXY(35,7+i); Write('tekan enter untuk lanjutkan');
+                i := 1;
+                readln;
+                clrscr;
+            end;
+
             gotoxy(30,7+i); write('|    |                  |                      |');
-            GotoXY(32,7+i); Write(i);
+            GotoXY(32,7+i); Write(k);
             GotoXY(37,7+i); Write(token);
             GotoXY(62,7+i); Write(kategori);
+
+
+
 
             token := '';
             kategori := '';
         end;
-        //readln;
+        gotoxy(30,7); write('------------------------------------------------');
     end;
     Close(f);
 end;

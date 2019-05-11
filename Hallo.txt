@@ -1,5 +1,13 @@
-﻿for i := 1 to - 1 do
+﻿program an ;
+
+var
+integer : a , b , c ;
+real	: x , y , z ;
+
 begin
-for j := downto 2 do
+if ( a = 'bangsat' ) then
 begin
- 
+a := 'tobat' ;
+b := 111028937838 + 23.3987 iiii ;
+end ;
+end .
