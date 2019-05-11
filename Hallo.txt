@@ -1,0 +1,5 @@
+﻿for i := 1 to - 1 do
+begin
+for j := downto 2 do
+begin
+ 
