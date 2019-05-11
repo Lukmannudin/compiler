@@ -10,6 +10,9 @@ Var
    i,k      : Integer;
    kutip    : boolean;
 
+   hasilToken    : array[0..100] of String;
+   hasilKategori : array[0..100] of String;
+
 procedure addToken;
 begin
     read(f,ch);
@@ -1244,9 +1247,12 @@ begin
                 clrscr;
             end;
 
+            hasilToken[k]       := token;
+            hasilKategori[k]    := kategori;
+
             gotoxy(30,7+i); write('|    |                  |                      |');
             GotoXY(32,7+i); Write(k);
-            GotoXY(37,7+i); Write(token);
+            GotoXY(37,7+i); Write(hasilToken[k]);
             GotoXY(62,7+i); Write(kategori);
 
 
@@ -1255,7 +1261,7 @@ begin
             token := '';
             kategori := '';
         end;
-        //readln;
+        gotoxy(30,7); write('------------------------------------------------');
     end;
     Close(f);
 end;
