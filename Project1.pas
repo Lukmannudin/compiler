@@ -1,4 +1,4 @@
-Program program331;
+Program program1;
 
 Uses crt, wincrt;
 
