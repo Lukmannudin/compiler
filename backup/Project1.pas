@@ -10,6 +10,7 @@ Var
    i,k,j    : Integer;
    kutip    : boolean;
    cekToken, cekKate : String;
+   akhir, terima     : boolean;
 
    hasilToken    : array[0..100] of String;
    hasilKategori : array[0..100] of String;
@@ -1304,17 +1305,19 @@ procedure bacaToken;
 begin
     if j <= k then
     begin
-        if ((hasilKategori[j] <> 'identifier') or (hasilKategori[j] <> 'typeint')) then
-        begin
-            cekToken := hasilToken[j];
-            j := j + 1;
-            //writeln(cekToken);
-        end
-        else
+        if ((hasilKategori[j] = 'identifier') or
+        (hasilKategori[j] = 'typeint') or
+        (hasilKategori[j] = 'typereal')) then
         begin
              cekToken := hasilKategori[j];
              j := j + 1;
              //writeln(j);
+        end
+        else
+        begin
+             cekToken := hasilToken[j];
+             j := j + 1;
+             //writeln(cekToken);
         end;
     end;
 end;
@@ -1324,36 +1327,27 @@ begin
 
      if terminal = cekToken then
      begin
+         terima := true;
           writeln('ok ' + cekToken);
           bacaToken;
      end
      else
-         write('Tidak Diterima ' + terminal + ' dengan ' + cekToken);
-
-end;
-
-procedure cekKat(kategori : String);
-begin
-
-     if kategori = cekToken then
-     begin
-          writeln('ok ' + cekToken);
-          bacaToken;
-     end
-     else
-         write('Tidak Diterima '+ kategori + ' dengan ' + cekToken);
-
+        terima := false;
+        if akhir = true then
+        begin
+            write('Tidak Diterima ' + terminal + ' dengan ' + cekToken);
+        end;
 end;
 
 procedure empty;
 begin
-     writeln('ok empty');
+    writeln('ok empty');
 end;
 
 procedure identifier;
 begin
     writeln('identifier');
-    cekKat('identifier');
+    cek('identifier');
 
 end;
 
@@ -1361,19 +1355,144 @@ procedure program_;
 begin
      writeln('program');
      cek('program');
-     readln;
      identifier;
      cek(';');
 end;
 
 procedure unsigned_integer;
 begin
-     cekKat('typeint');
+     cek('typeint');
 end;
 
+procedure unsigned_real;
+begin
+     cek('typereal');
+end;
+
+procedure sign;
+begin
+    case (cekToken) of
+        '+'     : begin
+                    cek('+');
+                end;
+        '-'     : begin
+                    cek('-');
+                end;
+    
+    end;
+end;
+
+procedure unsigned_number;
+var
+   c  : integer;
+begin
+    c := 1;
+    while c <= 2 do
+    begin
+        case (c) of
+            1   : begin
+                    unsigned_integer;
+                    if terima = true then
+                    begin
+                         break;
+                    end;
+                end;
+
+            2   : begin
+                    unsigned_real;
+                    akhir := true;
+                    if terima = true then
+                    begin
+                         break;
+                    end;
+                end;
+        end;
+        c := c + 1;
+    end;
+    akhir := false;
+end;
+
+procedure constant_identifier;
+begin
+    identifier;
+end;
+
+procedure constant;
+var
+   c  : integer;
+begin
+    c := 1;
+    while c <= 4 do
+    begin
+        case (c) of
+            1   : begin
+                    unsigned_number;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+
+            2   : begin
+                    sign;
+                    unsigned_number;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+
+            3   : begin
+                    constant_identifier;
+                    if terima = true then
+                    begin
+                        
+                        break;
+                    end;
+                end;
+
+            4   : begin
+                    sign;
+                    constant_identifier;
+                    write('terima');
+                    akhir := true;
+                    if terima = true then
+                    begin
+
+                         break;
+                    end;
+                end;
+        end;
+        c := c + 1;
+    end;
+    akhir := false;
+end;
+
+procedure constant_definition;
+begin
+     identifier;
+     cek('=');
+     constant;
+end;
+
+procedure constant_definition_part;
+begin
+    case (cekToken) of
+        'const'    : begin
+                        cek('const');
+                        constant_definition;
+                        cek(';');
+                    end;
+    else
+    empty;
+    end;
+end;
+
+//-----------------Label-----------------
 procedure label_;
 begin
      unsigned_integer;
+     constant_definition_part;
 end;
 
 procedure label_declaration_part;
@@ -1382,6 +1501,7 @@ begin
           'label'    : begin
                             cek('label');
                             label_;
+                            cek(';');
                        end;
      else
        empty;

@@ -1,2 +1,4 @@
 ﻿program sa ;
 label 1
+const
+	a = - ab ;
