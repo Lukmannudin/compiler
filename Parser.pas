@@ -93,15 +93,18 @@ begin
   end;  
 end;
 
-
-
-
 procedure simple_type();
+var
+i:Integer;
 begin
-  case cekToken of 
-    'scalar type': scalar_type();
-    'subrange type': subrange_type();
-    'type identifier': type_identifier();
+for i:=0 to 3 do
+  begin
+    case cekToken of 
+      0: scalar_type();
+      1: subrange_type();
+      2: type_identifier();
+      3: cek('salah');
+    end;  
   end;
 end;
 
@@ -112,7 +115,7 @@ end;
 
 procedure component_type();
 begin
-  type_();
+  // type_();
 end;
 
 procedure array_tipe();
@@ -133,11 +136,17 @@ begin
 end;
 
 procedure type_();
+var
+  i: Integer;
 begin
-  case cekToken of
-    'simple type': simple_type();
-    'structured type': structured_type();
-    'pointer type': pointer_type();
+  for i:=0 to 3 do 
+  begin
+    case i of 
+    0: simple_type();
+    1: structured_type();
+    2: pointer_type();
+    3: cek('salah');
+    end;
   end;
 end;
 
