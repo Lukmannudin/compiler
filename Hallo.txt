@@ -1,13 +1,2 @@
-﻿program an ;
-
-var
-integer : a , b , c ;
-real	: x , y , z ;
-
-begin
-if ( a = 'bangsat' ) then
-begin
-a := 'tobat' ;
-b := 111028937838 + 23.3987 iiii ;
-end ;
-end .
+﻿program sa ;
+label 1

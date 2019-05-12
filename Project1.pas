@@ -7,8 +7,9 @@ Var
    ch       : char;
    token    : String;
    kategori : String;
-   i,k      : Integer;
+   i,k,j    : Integer;
    kutip    : boolean;
+   cekToken, cekKate : String;
 
    hasilToken    : array[0..100] of String;
    hasilKategori : array[0..100] of String;
@@ -73,7 +74,7 @@ begin
                                     if not (ch in[#33..#127]) then
                                     begin
                                         // intcon
-                                        token := 'Integer';
+                                        token := 'integer';
                                         kategori := 'intcon';
                                     end
                                     else
@@ -601,7 +602,7 @@ begin
                                     if not (ch in[#33..#127]) then
                                     begin
                                         // programsy
-                                        token := 'Program';
+                                        token := 'program';
                                         kategori := 'programsy';
                                     end
                                     else
@@ -630,7 +631,7 @@ begin
                     if not (ch in[#33..#127]) then
                     begin
                         // endly
-                        token := 'End';
+                        token := 'end';
                         kategori := 'endsy';
                     end
                     else
@@ -687,7 +688,7 @@ begin
                                 if not (ch in[#33..#127]) then
                                 begin
                                     // stringt
-                                    token := 'String';
+                                    token := 'string';
                                     kategori := 'stringt';
                                 end
                                 else
@@ -1234,6 +1235,39 @@ begin
                 kategori := 'typechar';
             end;
             kutip := false;
+        end
+
+        // P
+        else if ch = 'l' then
+        begin
+            addToken;
+            if ch = 'a' then
+            begin
+                addToken;
+                if ch = 'b' then
+                begin
+                    addToken;
+                    if ch = 'e' then
+                    begin
+                        addToken;
+                        if ch = 'l' then
+                        begin
+                            addToken;
+                            if not (ch in[#33..#127]) then
+                            begin
+                                // whilesy
+                                token := 'label';
+                                kategori := 'labelsy';
+                            end
+                            else
+                            begin
+                                while (ch in[#33..#127]) do
+                                    addToken;
+                            end;
+                        end;
+                    end;
+                end;
+            end;
         end;
 
         if token <> '' then begin
@@ -1266,6 +1300,108 @@ begin
     Close(f);
 end;
 
+procedure bacaToken;
+begin
+    if j <= k then
+    begin
+        if ((hasilKategori[j] = 'identifier') or (hasilKategori[j] = 'typeint')) then
+        begin
+             cekToken := hasilKategori[j];
+             j := j + 1;
+             //writeln(j);
+        end
+        else
+        begin
+             cekToken := hasilToken[j];
+             j := j + 1;
+             //writeln(cekToken);
+        end;
+    end;
+end;
+
+procedure cek(terminal : String);
+begin
+
+     if terminal = cekToken then
+     begin
+          writeln('ok ' + cekToken);
+          bacaToken;
+     end
+     else
+         write('Tidak Diterima ' + terminal + ' dengan ' + cekToken);
+
+end;
+
+procedure cekKat(kategori : String);
+begin
+
+     if kategori = cekToken then
+     begin
+          writeln('ok ' + cekToken);
+          bacaToken;
+     end
+     else
+         write('Tidak Diterima '+ kategori + ' dengan ' + cekToken);
+
+end;
+
+procedure empty;
+begin
+     writeln('ok empty');
+end;
+
+procedure identifier;
+begin
+    writeln('identifier');
+    cekKat('identifier');
+
+end;
+
+procedure program_;
+begin
+     writeln('program');
+     cek('program');
+     readln;
+     identifier;
+     cek(';');
+end;
+
+procedure unsigned_integer;
+begin
+     cekKat('typeint');
+end;
+
+procedure label_;
+begin
+     unsigned_integer;
+end;
+
+procedure label_declaration_part;
+begin
+     case (cekToken) of
+          'label'    : begin
+                            cek('label');
+                            label_;
+                       end;
+     else
+       empty;
+     end;
+end;
+
+procedure block;
+begin
+     label_declaration_part;
+end;
+
+procedure parser;
+begin
+    j := 1;
+    bacaToken;
+    program_;
+
+    block;
+end;
+
 procedure border;
 begin
     gotoxy(30,5); write('------------------------------------------------');
@@ -1276,5 +1412,6 @@ end;
 Begin
   border;
   scanCode;
+  parser;
   readln;
 End.
