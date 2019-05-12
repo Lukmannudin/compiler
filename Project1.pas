@@ -1290,9 +1290,6 @@ begin
             GotoXY(37,7+i); Write(hasilToken[k]);
             GotoXY(62,7+i); Write(hasilKategori[k]);
 
-
-
-
             token := '';
             kategori := '';
         end;
@@ -1347,8 +1344,12 @@ end;
 procedure identifier;
 begin
     writeln('identifier');
+<<<<<<< HEAD
     cek('identifier');
 
+=======
+    cekKat('identifier');
+>>>>>>> 37885e9bfa6802a56064a8052065cb499beed929
 end;
 
 procedure program_;
