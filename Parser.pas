@@ -12,16 +12,6 @@ begin
   
 end;
 
-procedure empty();
-begin
-     writeln('ok empty');
-end;
-
-procedure constant();
-begin
-  
-end;
-
 procedure identifier;
 begin
     writeln('identifier');
@@ -37,6 +27,18 @@ begin
 end;
 // end 
 
+procedure empty();
+begin
+     writeln('ok empty');
+end;
+
+procedure constant();
+begin
+  
+end;
+
+
+//delimiter type definition part
 
 procedure subrange_type();
 begin
@@ -62,21 +64,6 @@ begin
   identifier();
 end;
 
-
-procedure field_list();
-begin
-  
-end;
-
-procedure record_type();
-begin
-  cek('record');
-  field_list();
-  cek('end');
-end;
-
-
-
 procedure scalar_type();
 begin
   cek('(');
@@ -85,12 +72,18 @@ begin
 end;
 
 procedure pointer_type();
+var 
+  i:Integer;
 begin
-  case cekToken of 
-    'scalar type': scalar_type;
-    'subrange_type': subrange_type;
-    'type_identifier': type_identifier();
-  end;  
+for i:=0 to 3 do
+  begin
+    case i of 
+      0: scalar_type;
+      1: subrange_type;
+      2: type_identifier();
+      3: cek('salah');
+    end;  
+  end;
 end;
 
 procedure simple_type();
@@ -99,7 +92,7 @@ i:Integer;
 begin
 for i:=0 to 3 do
   begin
-    case cekToken of 
+    case i of 
       0: scalar_type();
       1: subrange_type();
       2: type_identifier();
@@ -128,10 +121,43 @@ begin
   component_type();
 end;
 
-procedure structured_type();
+procedure record_type();
 begin
-  case cekToken of 
-    'array_type': array_tipe();
+  cek('record');
+  // field_list(); //notbabi
+  cek('end');
+end;
+
+procedure base_type();
+begin
+  simple_type();
+end;
+
+procedure set_type();
+begin
+  cek('set');
+  cek('of');
+  base_type();
+end;
+
+procedure file_type();
+begin
+  cek('file');
+  cek('of');
+  // type_();// notbabi
+end;
+
+procedure structured_type();
+var
+  i:Integer;
+begin
+  for i:=0 to 4 do
+    case i of 
+      0: array_tipe();
+      1: record_type();
+      2: set_type();
+      3: file_type();
+      4: cek('salah');
   end;
 end;
 
@@ -168,13 +194,26 @@ end;
 
 procedure fixed_part_();
 begin
-  if hasilToken[j+1] = ';' then
+  if hasilToken[j] = ';' then
     begin
       fixed_part();
       cek(';');
       variant_part();
     end else 
       fixed_part();
+end;
+
+procedure field_list();
+var i:Integer;
+begin
+  for i:=0 to 2 do
+    begin
+      case i of
+        0: fixed_part_;
+        1: variant_part();
+        2: cek('salah');
+      end;
+    end;
 end;
 
 procedure type_definition();
@@ -192,6 +231,136 @@ begin
           type_definition();
       end;
     end;
+end;
+
+//delimiter variable declaration part
+procedure variable_declaration();
+begin
+  identifier;
+  type_;
+end;
+
+procedure variable_declaration_part();
+begin
+  if (cekToken <> '') then
+    begin
+      cek('var');
+      variable_declaration();
+    end else 
+      empty;
+end;
+
+// delimiter procedure and function declaration part
+procedure result_type();
+begin
+  type_identifier();
+end;
+
+procedure parameter_group();
+begin
+  identifier();
+  cek(':');
+  type_identifier();
+end;
+
+procedure formal_parameter_section();
+begin
+  if cekToken[k] = 'var' then
+    begin
+      cek('var');
+      parameter_group();
+    end else 
+    if cekToken[k] = 'function' then
+      begin
+        cek('function');
+        parameter_group();
+      end else
+        if(cekToken[j]='procedure') then
+          begin
+            cek('procedure');
+            identifier;    
+          end else 
+          parameter_group();
+end;
+
+procedure function_heading();
+begin
+  cek('function');
+  identifier;
+
+  if cekToken[j] = '('  then
+    begin
+      cek('(');
+      formal_parameter_section();
+      cek(')');
+      cek(':');
+      result_type();
+      cek(';');
+    end else if(cekToken[j] = ':') then
+      begin
+        cek(':');
+        result_type();
+        cek(';');
+      end else
+        cek('salah');
+end;
+
+procedure procedure_heading();
+var i:Integer;
+begin
+  cek('procedure');
+  identifier();
+  if cekToken[j] = ';' then
+    cek(';')
+  else if (cekToken[j] = '(') then
+  begin
+    cek('(');
+    formal_parameter_section();
+    cek(')');
+  end else
+    cek('salah');
+end;
+
+
+procedure function_declaration();
+begin
+  function_heading();
+  // block;//notbabi  
+end;
+
+procedure procedure_declaration();
+begin
+  procedure_heading();
+  // block();//not babi
+end;
+
+procedure procedure_or_function_declaration();
+var i: Integer;
+begin
+  for i:=0 to 2 do
+    begin
+      case i of 
+        0: procedure_declaration();
+        1: function_declaration();
+        2: cek('salah');
+      end;
+    end;
+end;
+
+procedure procedure_and_function_declaration_part();
+begin
+  procedure_or_function_declaration();
+end;
+
+// delimiter statement part
+procedure compound_statement();
+begin
+  cek('compound statement');
+end;
+
+procedure statement_part();
+begin
+  compound_statement();
 end;
 
 begin
