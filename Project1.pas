@@ -10,7 +10,6 @@ Var
    i,k,j    : Integer;
    kutip    : boolean;
    cekToken, cekKate : String;
-   akhir, terima     : boolean;
 
    hasilToken    : array[0..100] of String;
    hasilKategori : array[0..100] of String;
@@ -1290,6 +1289,9 @@ begin
             GotoXY(37,7+i); Write(hasilToken[k]);
             GotoXY(62,7+i); Write(hasilKategori[k]);
 
+
+
+
             token := '';
             kategori := '';
         end;
@@ -1302,9 +1304,7 @@ procedure bacaToken;
 begin
     if j <= k then
     begin
-        if ((hasilKategori[j] = 'identifier') or
-        (hasilKategori[j] = 'typeint') or
-        (hasilKategori[j] = 'typereal')) then
+        if ((hasilKategori[j] = 'identifier') or (hasilKategori[j] = 'typeint')) then
         begin
              cekToken := hasilKategori[j];
              j := j + 1;
@@ -1324,174 +1324,55 @@ begin
 
      if terminal = cekToken then
      begin
-         terima := true;
           writeln('ok ' + cekToken);
           bacaToken;
      end
      else
-        terima := false;
-        if akhir = true then
-        begin
-            write('Tidak Diterima ' + terminal + ' dengan ' + cekToken);
-        end;
+         write('Tidak Diterima ' + terminal + ' dengan ' + cekToken);
+
+end;
+
+procedure cekKat(kategori : String);
+begin
+
+     if kategori = cekToken then
+     begin
+          writeln('ok ' + cekToken);
+          bacaToken;
+     end
+     else
+         write('Tidak Diterima '+ kategori + ' dengan ' + cekToken);
 end;
 
 procedure empty;
 begin
-    writeln('ok empty');
+     writeln('ok empty');
 end;
 
 procedure identifier;
 begin
     writeln('identifier');
-<<<<<<< HEAD
-    cek('identifier');
-
-=======
     cekKat('identifier');
->>>>>>> 37885e9bfa6802a56064a8052065cb499beed929
+
 end;
 
 procedure program_;
 begin
      writeln('program');
      cek('program');
+     readln;
      identifier;
      cek(';');
 end;
 
 procedure unsigned_integer;
 begin
-     cek('typeint');
+     cekKat('typeint');
 end;
 
-procedure unsigned_real;
-begin
-     cek('typereal');
-end;
-
-procedure sign;
-begin
-    case (cekToken) of
-        '+'     : begin
-                    cek('+');
-                end;
-        '-'     : begin
-                    cek('-');
-                end;
-    
-    end;
-end;
-
-procedure unsigned_number;
-var
-   c  : integer;
-begin
-    c := 1;
-    while c <= 2 do
-    begin
-        case (c) of
-            1   : begin
-                    unsigned_integer;
-                    if terima = true then
-                    begin
-                         break;
-                    end;
-                end;
-
-            2   : begin
-                    unsigned_real;
-                    akhir := true;
-                    if terima = true then
-                    begin
-                         break;
-                    end;
-                end;
-        end;
-        c := c + 1;
-    end;
-    akhir := false;
-end;
-
-procedure constant_identifier;
-begin
-    identifier;
-end;
-
-procedure constant;
-var
-   c  : integer;
-begin
-    c := 1;
-    while c <= 4 do
-    begin
-        case (c) of
-            1   : begin
-                    unsigned_number;
-                    if terima = true then
-                    begin
-                        break;
-                    end;
-                end;
-
-            2   : begin
-                    sign;
-                    unsigned_number;
-                    if terima = true then
-                    begin
-                        break;
-                    end;
-                end;
-
-            3   : begin
-                    constant_identifier;
-                    if terima = true then
-                    begin
-                        break;
-                    end;
-                end;
-
-            4   : begin
-                    sign;
-                    constant_identifier;
-                    write('terima');
-                    akhir := true;
-                    if terima = true then
-                    begin
-                        break;
-                    end;
-                end;
-        end;
-        c := c + 1;
-    end;
-    akhir := false;
-end;
-
-procedure constant_definition;
-begin
-     identifier;
-     cek('=');
-     constant;
-end;
-
-procedure constant_definition_part;
-begin
-    case (cekToken) of
-        'const'    : begin
-                        cek('const');
-                        constant_definition;
-                        cek(';');
-                    end;
-    else
-    empty;
-    end;
-end;
-
-//-----------------Label-----------------
 procedure label_;
 begin
      unsigned_integer;
-     constant_definition_part;
 end;
 
 procedure label_declaration_part;
@@ -1500,7 +1381,6 @@ begin
           'label'    : begin
                             cek('label');
                             label_;
-                            cek(';');
                        end;
      else
        empty;
@@ -1519,6 +1399,162 @@ begin
     program_;
 
     block;
+end;
+
+
+//
+
+// nu lukman
+procedure constant();
+begin
+  
+end;
+
+procedure subrange_type();
+begin
+  constant();
+  cek('.');
+  cek('.');
+  constant();
+end;
+
+procedure type_identifier();
+begin
+  identifier();
+end;
+
+procedure variant_part();
+begin
+  WriteLn('variant part');
+  cekKat('variant part');
+end;
+
+procedure field_identifier();
+begin
+  identifier();
+end;
+
+
+procedure field_list();
+begin
+  
+end;
+
+procedure record_type();
+begin
+  cek('record');
+  field_list();
+  cek('end');
+end;
+
+
+
+procedure scalar_type();
+begin
+  cek('(');
+  identifier();
+  cek(')');
+end;
+
+procedure pointer_type();
+begin
+  case cekToken of 
+    'scalar type': scalar_type;
+    'subrange_type': subrange_type;
+    'type_identifier': type_identifier();
+  end;  
+end;
+
+
+
+
+procedure simple_type();
+begin
+  case cekToken of 
+    'scalar type': scalar_type();
+    'subrange type': subrange_type();
+    'type identifier': type_identifier();
+  end;
+end;
+
+procedure index_type();
+begin
+  simple_type();
+end;
+
+procedure component_type();
+begin
+  type_();
+end;
+
+procedure array_tipe();
+begin
+  cek('array');
+  cek('[');
+  index_type();
+  cek(']');
+  cek('of');
+  component_type();
+end;
+
+procedure structured_type();
+begin
+  case cekToken of 
+    'array_type': array_tipe();
+  end;
+end;
+
+procedure type_();
+begin
+  case cekToken of
+    'simple type': simple_type();
+    'structured type': structured_type();
+    'pointer type': pointer_type();
+  end;
+end;
+
+procedure record_section();
+begin
+  if cekToken <> '' then
+   begin
+    field_identifier();
+    cek(':');
+    type_();
+   end else
+   empty();
+end;
+
+procedure fixed_part();
+begin
+  record_section();
+end;
+
+procedure fixed_part_();
+begin
+  if hasilToken[j+1] = ';' then
+    begin
+      fixed_part();
+      cek(';');
+      variant_part();
+    end else 
+      fixed_part();
+end;
+
+procedure type_definition();
+begin
+  identifier();
+  cek('=');
+  type_();
+end;
+
+procedure type_definition_part();
+begin
+    case cekToken of
+      'type': begin
+          cek('type');
+          type_definition();
+      end;
+    end;
 end;
 
 procedure border;

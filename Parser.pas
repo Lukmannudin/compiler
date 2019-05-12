@@ -110,14 +110,9 @@ begin
   simple_type();
 end;
 
-procedure type__();
-begin
-  
-end;
-
 procedure component_type();
 begin
-  type__();
+  type_();
 end;
 
 procedure array_tipe();
