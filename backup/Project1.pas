@@ -1129,7 +1129,7 @@ begin
             if not (ch in[#33..#127]) then
             begin
                 // rbrack
-                token := '[';
+                token := ']';
                 kategori := 'rbrack';
             end
             else
@@ -1278,17 +1278,17 @@ begin
             if i = 22 then begin
                 GotoXY(35,7+i); Write('tekan enter untuk lanjutkan');
                 i := 1;
-                readln;
+                 //readln;
                 clrscr;
             end;
 
             hasilToken[k]       := token;
             hasilKategori[k]    := kategori;
 
-            gotoxy(30,7+i); write('|    |                  |                      |');
-            GotoXY(32,7+i); Write(k);
-            GotoXY(37,7+i); Write(hasilToken[k]);
-            GotoXY(62,7+i); Write(hasilKategori[k]);
+             gotoxy(30,7+i); write('|    |                  |                      |');
+             GotoXY(32,7+i); Write(k);
+             GotoXY(37,7+i); Write(hasilToken[k]);
+             GotoXY(62,7+i); Write(hasilKategori[k]);
 
 
 
@@ -1601,14 +1601,197 @@ begin
 
 end;
 
+procedure type_; forward;
 procedure component_type;
 begin
-    // type_;
+    type_;
 end;
 
 procedure index_type;
 begin
     simple_type;
+end;
+
+
+procedure field_identifier;
+begin
+    identifier;
+end;
+
+procedure record_section;
+var
+   c : integer;
+begin
+    c := 0;
+    while c <= 1 do
+    begin
+        c := c + 1;
+        case (c) of
+            1  : begin
+                    field_identifier;
+                    while hasilToken[j] = ',' do
+                    begin
+                        cek(',');
+                        field_identifier;
+                    end;
+                    cek(':');
+                    type_;
+                    akhir := true;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+        else
+            empty;
+        end;
+
+    end;
+end;
+
+procedure fixed_part;
+begin
+    record_section;
+    //while hasilToken[j] = ';' do
+    //begin
+    //    cek(';');
+    //    record_section;
+    //end;
+
+end;
+
+procedure variant_part; forward;
+procedure fixed_part_turunan;
+var
+   c : integer;
+begin
+    case (cekToken) of
+        ';'   : begin
+                cek(';');
+                variant_part;
+            end;
+    else
+        empty;
+    end;
+end;
+
+procedure case_label;
+begin
+    constant;
+end;
+
+procedure case_label_list;
+begin
+    case_label;
+    while hasilToken[j] = ',' do
+    begin
+        cek(',');
+        case_label;
+    end;
+end;
+
+procedure field_list; forward;
+procedure variant_;
+var
+   c : integer;
+begin
+    c := 0;
+    while c <= 1 do
+    begin
+        c := c + 1;
+        case (c) of
+            1  : begin
+                    case_label_list;
+                    cek(':');
+                    cek('(');
+                    field_list;
+                    cek(')');
+                end;
+        else
+            empty;
+        end;
+    end;
+end;
+
+procedure tag_field;
+var
+   c : integer;
+begin
+    c := 0;
+    while c <= 1 do
+    begin
+        c := c + 1;
+        case (c) of
+            1  : begin
+                    field_identifier;
+                    cek(':');
+                    akhir := true;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+        else
+            empty;
+        end;
+    end;
+end;
+
+procedure variant_type;
+begin
+    cek('case');
+    tag_field;
+    type_identifier;
+    cek('of');
+    variant_;
+    while hasilToken[j] = ';' do
+    begin
+        cek(';');
+        variant_;
+    end;
+
+end;
+
+procedure variant_part;
+begin
+    variant_type;
+end;
+
+procedure field_list;
+var
+   c  : integer;
+begin
+    c := 1;
+    while c <= 1 do
+    begin
+        case (c) of
+            1   : begin
+                    fixed_part;
+                    //fixed_part_turunan;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+
+            2   : begin
+                    //variant_part;
+                    akhir := true;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+        end;
+        c := c + 1;
+    end;
+end;
+
+procedure record_type;
+begin
+    cek('record');
+    //field_list;
+    cek('end');
 end;
 
 procedure array_type;
@@ -1626,6 +1809,7 @@ begin
     component_type;
 end;
 
+
 procedure structured_type;
 var
    c  : integer;
@@ -1635,7 +1819,7 @@ begin
     begin
         case (c) of
             1   : begin
-                    array_type;
+                    record_type;
                     if terima = true then
                     begin
                         break;
@@ -1643,7 +1827,7 @@ begin
                 end;
 
             2   : begin
-                    // record_type;
+                    array_type;
                     if terima = true then
                     begin
                         break;
@@ -1666,8 +1850,9 @@ begin
                         break;
                     end;
                 end;
+        end;
+        c := c + 1;
     end;
-    
 end;
 
 procedure type_;
@@ -1688,6 +1873,7 @@ begin
 
             2   : begin
                     structured_type;
+                    write('ada');
                     if terima = true then
                     begin
                         break;
@@ -1738,7 +1924,9 @@ begin
         'type'  : begin
                     cek('type');
                     type_definition;
-                    while (hasilKategori[j+1] = 'identifier') and (terima = true) do
+                    while (hasilKategori[j+1] = 'identifier') or
+                    (hasilToken[j+1] = 'record') or
+                    (hasilToken[j+1] = 'array')  do
                     begin
                         cek(';');
                         type_definition;
@@ -1750,11 +1938,437 @@ begin
         empty;
     end;
 end;
+
+//delimiter variable declaration part
+procedure variable_declaration();
+begin
+  identifier;
+  while (hasilToken[j] = ',') and (terima = true)  do
+    begin
+      identifier;
+    end;
+  cek(':');
+  type_;
+end;
+
+procedure variable_declaration_part();
+begin
+  if (cekToken <> '') then
+    begin
+      cek('var');
+      variable_declaration();
+      while (hasilToken[j] = ';') and  (terima = true) do
+        begin
+          variable_declaration();
+        end;
+      cek(';');  
+    end else 
+      empty;
+end;
+
+// delimiter procedure and function declaration part
+procedure result_type();
+begin
+  type_identifier();
+end;
+
+procedure parameter_group();
+begin
+  identifier();
+  cek(':');
+  type_identifier();
+end;
+
+procedure formal_parameter_section();
+begin
+  if hasilToken[k] = 'var' then
+    begin
+      cek('var');
+      parameter_group();
+    end else 
+    if hasilToken[k] = 'function' then
+      begin
+        cek('function');
+        parameter_group();
+      end else
+        if(hasilToken[j]='procedure') then
+          begin
+            cek('procedure');
+            identifier;    
+          end else 
+          parameter_group();
+end;
+
+procedure function_heading();
+begin
+  cek('function');
+  identifier;
+
+  if hasilToken[j] = '('  then
+    begin
+      cek('(');
+      formal_parameter_section();
+      while (hasilToken[j]=';') and (terima = true) do
+        begin
+          cek(';');
+          formal_parameter_section();     
+        end;
+          cek(')');
+          cek(':');
+          result_type();
+          cek(';');
+        
+    end else if(hasilToken[j] = ':') then
+      begin
+        cek(':');
+        result_type();
+        cek(';');
+      end else
+        cek('salah');
+end;
+
+procedure procedure_heading();
+var i:Integer;
+begin
+  cek('procedure');
+  identifier();
+  if hasilToken[j] = ';' then
+    cek(';')
+  else if (hasilToken[j] = '(') then
+  begin
+    cek('(');
+    formal_parameter_section();
+    while cekToken=';' do
+    begin
+      cek(';');
+      formal_parameter_section();
+    end;
+    cek(')');
+  end else
+    cek('salah');
+end;
+
+
+procedure function_declaration();
+begin
+  function_heading();
+  // block;//notbabi  
+end;
+
+procedure procedure_declaration();
+begin
+  procedure_heading();
+  // block();//not babi
+end;
+
+procedure procedure_or_function_declaration();
+var i: Integer;
+begin
+  for i:=0 to 2 do
+    begin
+      case i of 
+        0: procedure_declaration();
+        1: function_declaration();
+        2: cek('salah');
+      end;
+    end;
+end;
+
+procedure procedure_and_function_declaration_part();
+begin
+  procedure_or_function_declaration();
+end;
+
+//----------------------------------------------------------------------------------------------------
+//--------------------------------------delimiter statement part--------------------------------------
+//----------------------------------------------------------------------------------------------------
+
+procedure variable();
+begin
+  
+end;
+
+procedure unsigned_constant();
+var i:Integer;
+begin
+  for i:= 0 to 3 do
+    begin
+      case i of
+        0: unsigned_number;
+        1: cek('string');
+        2: begin
+          constant_identifier;
+          cek('nil');
+        end;
+        3: cek('salah');
+        end;
+    end;
+end;
+
+procedure actual_parameter();
+begin
+  
+end;
+
+procedure function_identifier();forward;
+procedure function_designator();
+var i:Integer;
+begin
+  function_identifier();
+  if hasilToken[j]='(' then
+    begin
+      cek('(');
+      actual_parameter();
+      while hasilToken[j] = ',' do
+        begin
+          cek(',');
+          actual_parameter;
+        end;
+      cek(')');  
+    end;
+end;
+
+procedure element_list();
+begin
+end;
+
+procedure set_();
+begin
+  cek('[');
+  element_list();
+  cek(']');
+end;
+
+procedure expression();forward;
+procedure factor();
+var i: Integer;
+begin
+  for i:=0 to 5 do
+    begin
+     case i of
+      0: variable;
+      1: unsigned_constant;
+      2: begin
+        cek('(');
+        expression();
+        cek(')');
+         end;
+      3: function_designator;
+      4: set_();
+      5: begin 
+          cek('not');
+          end;
+     end;  
+    end;
+end;
+
+procedure multiplying_operator();
+begin
+  case cekToken of 
+    '*': cek('*');
+    '/': cek('/');
+    'div': cek('div');
+    'mod': cek('mod');
+    'and': cek('and');
+    else 
+      cek('salah');
+  end;
+end;
+
+procedure term();
+var i:Integer;
+begin
+  for i:=0 to 2 do
+    begin
+      case i of
+        0: factor;
+        1: begin
+          term;
+          multiplying_operator();
+          factor();
+        end;
+        2: cek('salah');
+      end;  
+    end;
+end;
+
+procedure sign_term();
+begin
+  
+end;
+
+procedure adding_operator();
+begin
+  case cekToken of
+    '+': cek('+');
+    '-': cek('-');
+    'or': cek('or');
+    else
+      cek('salah');
+  end;
+end;
+
+procedure simple_expression();
+var i: Integer;
+begin
+  for i:=0 to 3 do
+    begin
+      case i of 
+        0: term;
+        1: begin
+          sign_term;
+          term;
+        end;  
+        2: begin 
+          simple_expression;
+          adding_operator;
+          term;
+        end;
+        3: cek('salah');
+      end;
+    end;
+end;
+
+procedure relational_operator();
+begin
+  case cekToken of
+    '=': cek('=');
+    '<>': cek('<>');
+    '<': cek('<');
+    '<=': cek('<=');
+    '>=': cek('>=');
+    '>': cek('>');
+    'in': cek('in');
+    else
+      cek('salah');
+  end;
+end;
+
+procedure expression();
+var i:Integer;
+begin
+  simple_expression();
+  relational_operator();
+  if (terima = true) then
+    simple_expression();
+
+end;
+
+procedure function_identifier();
+begin
+  identifier;
+end;
+
+procedure assignment_statement();
+var i:Integer;
+begin
+  for i:=0 to 2 do
+    begin
+      case i of
+        0: begin
+            variable;
+            cek(':=');
+            expression();             
+           end;
+        1: begin
+            function_identifier();
+            cek(':=');
+            expression();
+          end;
+        2: cek('salah');
+      end;
+    end;
+end;
+
+procedure procedure_statement();
+begin
+  
+end;
+
+procedure go_to_statement();
+begin
+  
+end;
+
+procedure empty_statement();
+begin
+  
+end;
+
+procedure simple_statement();
+var i:Integer;
+begin
+  for i:=0 to 4 do
+    begin
+    case i of
+        0: assignment_statement();
+        1: procedure_statement();
+        2: go_to_statement();
+        3: empty_statement();
+        4: cek('salah');
+      end;
+    end;
+end;
+
+procedure structured_statement();
+begin
+  
+end;
+
+procedure unlabelled_statement();
+var i:Integer;
+begin
+  for i:=0 to 2 do
+    begin
+      case i of
+        0: simple_statement();
+        1: structured_statement();
+        2: cek('salah');
+      end;
+    end;
+end;
+
+procedure statement();
+var i:Integer;
+begin
+  for i:=0 to 4 do
+    begin
+      case i of
+        0: unlabelled_statement();
+        1: begin
+          label_();
+          cek(':');
+          unlabelled_statement();
+        end;
+      end;
+    end;
+end;
+
+procedure compound_statement();
+begin
+  cek('begin');
+  statement();
+  while (hasilToken[j] = ';') and (terima = true) do
+    begin
+      cek(';');
+      statement();
+    end;
+  cek('end');
+  cek(';');
+end;
+
+procedure statement_part();
+begin
+  compound_statement();
+end;
+
 procedure block;
 begin
     label_declaration_part;
     constant_definition_part;
     type_definition_part;
+    variable_declaration_part;
+    //procedure_and_function_declaration_part;
 end;
 
 procedure parser;

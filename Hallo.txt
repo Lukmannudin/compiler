@@ -2,18 +2,21 @@
 
 label 1 , 2 ;
 
-temp = label
-
-if 
-
 const
 	a = 'anda' ;
 	b = 'budi' ;
 
 type
-	r = a , b ;
-	c = b , c ;
 
-procedure sata ( ) ;
-begin
-end ;
+ac = record  end ;
+	
+a = array [ 1 ] of a ;
+
+procedure
+	
+	
+
+	
+	
+
+	 
