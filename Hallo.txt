@@ -1,4 +1,11 @@
 ﻿program sa ;
-label 1
+
+label 1 , 2 ;
+
 const
-	a = - ab ;
+	a = 'anda' ;
+	b = 'budi' ;
+
+type
+	r = a , b ;
+	c = b , c ;

@@ -1305,18 +1305,22 @@ procedure bacaToken;
 begin
     if j <= k then
     begin
-        if ((hasilKategori[j] = 'identifier') or
-        (hasilKategori[j] = 'typeint') or
-        (hasilKategori[j] = 'typereal')) then
+
+        if ((hasilKategori[j+1] = 'identifier') or
+        (hasilKategori[j+1] = 'typeint') or
+        (hasilKategori[j+1] = 'typereal') or
+        (hasilKategori[j+1] = 'typechar')) then
         begin
-             cekToken := hasilKategori[j];
-             j := j + 1;
+            j := j + 1;
+            cekToken := hasilKategori[j];
+             
              //writeln(j);
         end
         else
         begin
-             cekToken := hasilToken[j];
-             j := j + 1;
+            j := j + 1;
+            cekToken := hasilToken[j];
+            
              //writeln(cekToken);
         end;
     end;
@@ -1327,15 +1331,17 @@ begin
 
      if terminal = cekToken then
      begin
-         terima := true;
-          writeln('ok ' + cekToken);
-          bacaToken;
+        terima := true;
+        writeln('ok ' + cekToken);
+        akhir := false;
+        bacaToken;
      end
      else
         terima := false;
         if akhir = true then
         begin
-            write('Tidak Diterima ' + terminal + ' dengan ' + cekToken);
+            writeln('Tidak Diterima ' + terminal + ' dengan ' + cekToken);
+            j := k + 1;
         end;
 end;
 
@@ -1346,14 +1352,14 @@ end;
 
 procedure identifier;
 begin
-    writeln('identifier');
+    //writeln('identifier');
     cek('identifier');
 
 end;
 
 procedure program_;
 begin
-     writeln('program');
+     writeln('');
      cek('program');
      identifier;
      cek(';');
@@ -1417,12 +1423,17 @@ begin
     identifier;
 end;
 
+procedure string_;
+begin
+    cek('typechar');
+end;
+
 procedure constant;
 var
    c  : integer;
 begin
     c := 1;
-    while c <= 4 do
+    while c <= 5 do
     begin
         case (c) of
             1   : begin
@@ -1446,7 +1457,6 @@ begin
                     constant_identifier;
                     if terima = true then
                     begin
-                        
                         break;
                     end;
                 end;
@@ -1454,11 +1464,17 @@ begin
             4   : begin
                     sign;
                     constant_identifier;
-                    write('terima');
+                    if terima = true then
+                    begin
+                         break;
+                    end;
+                end;
+            
+            5   : begin
+                    string_;
                     akhir := true;
                     if terima = true then
                     begin
-
                          break;
                     end;
                 end;
@@ -1478,44 +1494,272 @@ end;
 procedure constant_definition_part;
 begin
     case (cekToken) of
-        'const'    : begin
-                        cek('const');
-                        constant_definition;
+        'const' : begin
+                    cek('const');
+                    constant_definition;
+                    while (hasilKategori[j+1] = 'identifier') and (terima = true) do
+                    begin
                         cek(';');
+                        constant_definition;
                     end;
+                    akhir := true;
+                    write('keluar');
+                    cek(';');
+                end;
     else
-    empty;
+        empty;
     end;
 end;
 
 //-----------------Label-----------------
 procedure label_;
 begin
-     unsigned_integer;
-     constant_definition_part;
+    unsigned_integer;
 end;
 
 procedure label_declaration_part;
 begin
-     case (cekToken) of
-          'label'    : begin
-                            cek('label');
-                            label_;
-                            cek(';');
-                       end;
-     else
-       empty;
-     end;
+    case (cekToken) of
+        'label'    : begin
+                    cek('label');
+                    label_;
+                    
+                    while hasilToken[j] = ',' do
+                    begin
+                        cek(',');
+                        
+                        label_;
+                    end;
+                    akhir := true;
+                    cek(';');  
+                end;
+    else
+        empty;
+    end;
 end;
 
+procedure scalar_type;
+begin
+    identifier;
+    // write(hasilToken[j-1]);
+    while hasilToken[j] = ',' do
+    begin
+        cek(',');
+        identifier;
+    end;
+end;
+
+procedure subrange_type;
+begin
+    constant;
+    cek('.');
+    cek('.');
+    constant;
+end;
+
+procedure type_identifier;
+begin
+    identifier;    
+end;
+
+procedure simple_type;
+var
+   c  : integer;
+begin
+    c := 1;
+    while c <= 3 do
+    begin
+        case (c) of
+            1   : begin
+                    scalar_type;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+
+            2   : begin
+                    subrange_type;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+
+            3   : begin
+                    type_identifier;
+                    akhir := true;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+        end;
+        c := c + 1;
+    end;
+    akhir := false; 
+
+end;
+
+procedure component_type;
+begin
+    // type_;
+end;
+
+procedure index_type;
+begin
+    simple_type;
+end;
+
+procedure array_type;
+begin
+    cek('array');
+    cek('[');
+    index_type;
+    while hasilToken[j] = ',' do
+    begin
+        cek(',');
+        index_type;
+    end;
+    cek(']');
+    cek('of');
+    component_type;
+end;
+
+procedure structured_type;
+var
+   c  : integer;
+begin
+    c := 1;
+    while c <= 3 do
+    begin
+        case (c) of
+            1   : begin
+                    array_type;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+
+            2   : begin
+                    // record_type;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+
+            3   : begin
+                    // set_type;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+
+            4   : begin
+                    // file_type;
+                    akhir := true;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+    end;
+    
+end;
+
+procedure type_;
+var
+   c  : integer;
+begin
+    c := 1;
+    while c <= 5 do
+    begin
+        case (c) of
+            1   : begin
+                    simple_type;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+
+            2   : begin
+                    structured_type;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+
+            3   : begin
+                    constant_identifier;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
+                end;
+
+            4   : begin
+                    sign;
+                    constant_identifier;
+                    if terima = true then
+                    begin
+                         break;
+                    end;
+                end;
+            
+            5   : begin
+                    string_;
+                    akhir := true;
+                    if terima = true then
+                    begin
+                         break;
+                    end;
+                end;
+        end;
+        c := c + 1;
+    end;
+    akhir := false; 
+end;
+
+procedure type_definition;
+begin
+    identifier;
+    cek('=');
+    type_;
+end;
+
+procedure type_definition_part;
+begin
+    case (cekToken) of
+        'type'  : begin
+                    cek('type');
+                    type_definition;
+                    while (hasilKategori[j+1] = 'identifier') and (terima = true) do
+                    begin
+                        cek(';');
+                        type_definition;
+                    end;
+                    akhir := true;
+                    cek(';');
+                end;
+    else
+        empty;
+    end;
+end;
 procedure block;
 begin
-     label_declaration_part;
+    label_declaration_part;
+    constant_definition_part;
+    type_definition_part;
 end;
 
 procedure parser;
 begin
-    j := 1;
+    j := 0;
     bacaToken;
     program_;
 
