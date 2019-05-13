@@ -6,8 +6,14 @@ var
      i,k,j    : Integer;
      hasilKategori : array[0..100] of String;
      hasilToken    : array[0..100] of String;
+     akhir, terima     : boolean;
 
 procedure cekKat(kategori:String);
+begin
+  
+end;
+
+procedure label_();
 begin
   
 end;
@@ -33,6 +39,16 @@ begin
 end;
 
 procedure constant();
+begin
+  
+end;
+
+procedure unsigned_number();
+begin
+  
+end;
+
+procedure constant_identifier();
 begin
   
 end;
@@ -237,6 +253,11 @@ end;
 procedure variable_declaration();
 begin
   identifier;
+  while (hasilToken[j] = ',') and (terima = true)  do
+    begin
+      identifier;
+    end;
+  cek(':');
   type_;
 end;
 
@@ -246,6 +267,11 @@ begin
     begin
       cek('var');
       variable_declaration();
+      while (hasilToken[j] = ';') and  (terima = true) do
+        begin
+          variable_declaration();
+        end;
+      cek(';');  
     end else 
       empty;
 end;
@@ -265,17 +291,17 @@ end;
 
 procedure formal_parameter_section();
 begin
-  if cekToken[k] = 'var' then
+  if hasilToken[k] = 'var' then
     begin
       cek('var');
       parameter_group();
     end else 
-    if cekToken[k] = 'function' then
+    if hasilToken[k] = 'function' then
       begin
         cek('function');
         parameter_group();
       end else
-        if(cekToken[j]='procedure') then
+        if(hasilToken[j]='procedure') then
           begin
             cek('procedure');
             identifier;    
@@ -288,15 +314,21 @@ begin
   cek('function');
   identifier;
 
-  if cekToken[j] = '('  then
+  if hasilToken[j] = '('  then
     begin
       cek('(');
       formal_parameter_section();
-      cek(')');
-      cek(':');
-      result_type();
-      cek(';');
-    end else if(cekToken[j] = ':') then
+      while (hasilToken[j]=';') and (terima = true) do
+        begin
+          cek(';');
+          formal_parameter_section();     
+        end;
+          cek(')');
+          cek(':');
+          result_type();
+          cek(';');
+        
+    end else if(hasilToken[j] = ':') then
       begin
         cek(':');
         result_type();
@@ -310,12 +342,17 @@ var i:Integer;
 begin
   cek('procedure');
   identifier();
-  if cekToken[j] = ';' then
+  if hasilToken[j] = ';' then
     cek(';')
-  else if (cekToken[j] = '(') then
+  else if (hasilToken[j] = '(') then
   begin
     cek('(');
     formal_parameter_section();
+    while cekToken=';' do
+    begin
+      cek(';');
+      formal_parameter_section();
+    end;
     cek(')');
   end else
     cek('salah');
@@ -353,9 +390,284 @@ begin
 end;
 
 // delimiter statement part
+
+procedure variable();
+begin
+  
+end;
+
+procedure unsigned_constant();
+var i:Integer;
+begin
+  for i:= 0 to 3 do
+    begin
+      case i of
+        0: unsigned_number;
+        1: cek('string');
+        2: begin
+          constant_identifier;
+          cek('nil');
+        end;
+        3: cek('salah');
+        end;
+    end;
+end;
+
+procedure actual_parameter();
+begin
+  
+end;
+
+procedure function_identifier();forward;
+procedure function_designator();
+var i:Integer;
+begin
+  function_identifier();
+  if hasilToken[j]='(' then
+    begin
+      cek('(');
+      actual_parameter();
+      while hasilToken[j] = ',' do
+        begin
+          cek(',');
+          actual_parameter;
+        end;
+      cek(')');  
+    end;
+end;
+
+procedure element_list();
+begin
+end;
+
+procedure set_();
+begin
+  cek('[');
+  element_list();
+  cek(']');
+end;
+
+procedure expression();forward;
+procedure factor();
+var i: Integer;
+begin
+  for i:=0 to 5 do
+    begin
+     case i of
+      0: variable;
+      1: unsigned_constant;
+      2: begin
+        cek('(');
+        expression();
+        cek(')');
+         end;
+      3: function_designator;
+      4: set_();
+      5: begin 
+          cek('not');
+          end;
+     end;  
+    end;
+end;
+
+procedure multiplying_operator();
+begin
+  case cekToken of 
+    '*': cek('*');
+    '/': cek('/');
+    'div': cek('div');
+    'mod': cek('mod');
+    'and': cek('and');
+    else 
+      cek('salah');
+  end;
+end;
+
+procedure term();
+var i:Integer;
+begin
+  for i:=0 to 2 do
+    begin
+      case i of
+        0: factor;
+        1: begin
+          term;
+          multiplying_operator();
+          factor();
+        end;
+        2: cek('salah');
+      end;  
+    end;
+end;
+
+procedure sign();
+begin
+  
+end;
+
+procedure sign_term();
+begin
+  
+end;
+
+procedure adding_operator();
+begin
+  case cekToken of
+    '+': cek('+');
+    '-': cek('-');
+    'or': cek('or');
+    else
+      cek('salah');
+  end;
+end;
+
+procedure simple_expression();
+var i: Integer;
+begin
+  for i:=0 to 3 do
+    begin
+      case i of 
+        0: term;
+        1: begin
+          sign_term;
+          term;
+        end;  
+        2: begin 
+          simple_expression;
+          adding_operator;
+          term;
+        end;
+        3: cek('salah');
+      end;
+    end;
+end;
+
+procedure relational_operator();
+begin
+  case cekToken of
+    '=': cek('=');
+    '<>': cek('<>');
+    '<': cek('<');
+    '<=': cek('<=');
+    '>=': cek('>=');
+    '>': cek('>');
+    'in': cek('in');
+    else
+      cek('salah');
+  end;
+end;
+
+procedure expression();
+var i:Integer;
+begin
+  simple_expression();
+  relational_operator();
+  if (terima = true) then
+    simple_expression();
+
+end;
+
+procedure function_identifier();
+begin
+  identifier;
+end;
+
+procedure assignment_statement();
+var i:Integer;
+begin
+  for i:=0 to 2 do
+    begin
+      case i of
+        0: begin
+            variable;
+            cek(':=');
+            expression();             
+           end;
+        1: begin
+            function_identifier();
+            cek(':=');
+            expression();
+          end;
+        2: cek('salah');
+      end;
+    end;
+end;
+
+procedure procedure_statement();
+begin
+  
+end;
+
+procedure go_to_statement();
+begin
+  
+end;
+
+procedure empty_statement();
+begin
+  
+end;
+
+procedure simple_statement();
+var i:Integer;
+begin
+  for i:=0 to 4 do
+    begin
+    case i of
+        0: assignment_statement();
+        1: procedure_statement();
+        2: go_to_statement();
+        3: empty_statement();
+        4: cek('salah');
+      end;
+    end;
+end;
+
+procedure structured_statement();
+begin
+  
+end;
+
+procedure unlabelled_statement();
+var i:Integer;
+begin
+  for i:=0 to 2 do
+    begin
+      case i of
+        0: simple_statement();
+        1: structured_statement();
+        2: cek('salah');
+      end;
+    end;
+end;
+
+procedure statement();
+var i:Integer;
+begin
+  for i:=0 to 4 do
+    begin
+      case i of
+        0: unlabelled_statement();
+        1: begin
+          label_();
+          cek(':');
+          unlabelled_statement();
+        end;
+      end;
+    end;
+end;
+
 procedure compound_statement();
 begin
-  cek('compound statement');
+  cek('begin');
+  statement();
+  while (hasilToken[j] = ';') and (terima = true) do
+    begin
+      cek(';');
+      statement();
+    end;
+  cek('end');
+  cek(';');
 end;
 
 procedure statement_part();

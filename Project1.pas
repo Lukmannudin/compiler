@@ -1757,6 +1757,8 @@ begin
     type_definition_part;
 end;
 
+
+
 procedure parser;
 begin
     j := 0;
