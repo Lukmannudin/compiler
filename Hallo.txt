@@ -1,20 +1,92 @@
-﻿program sa ;
+﻿program sama ;
 
 label 1 , 2 ;
 
 const
-	a = 'anda' ;
-	b = 'budi' ;
+	const_a = 'anda' ;
+	const_b = 'budi' ;
+
+	const_n = 50 ;
+
+
 
 type
 
-ac = record  end ;
-	
-a = array [ 1 ] of a ;
+	type_ac = record  
+		record_a : Integer
+	end ;
 
-procedure
+	type_ada = ada ;
 	
+	type_a = array [ 1 ] of String ;
+	type_b = array [ 1 . . 5 ] of Integer ;
+
+	himpunan1 = set of Integer ;
+
+	himpunan2 = file of Integer ;
+
+var
+	a , c , d : Integer ;
+	c : String ;
+
+procedure B ( var b : bc ; var b : bc ) ;
+begin
+	a := a + b ;
+end ;
+
+function c ( var b : bc ; var b : bc ) : ac ;
+begin
+	a := a + b ;
+end ;
 	
+begin
+	ada := ab ;
+	ada := ab ;
+
+	q := a * a ;
+
+	w := a + a + a ;
+
+	e := ( 1 - 2 + 3 ) ;
+
+	f := 1 + 2 > 2 - 3 ;
+
+	ada ( a , b ) ;
+
+	if as > ab then 
+	begin 
+		a := b ;
+	end ;
+
+	if as > ab then 
+	begin 
+		a := b ;
+	end
+	else 
+	begin
+		b := a ;
+	end ;
+
+	case d of 
+		'if' : a ;
+		'case' : a ;
+	end
+
+	repeat
+		a := 1 + 2 ;
+		a := 1 + 2 ;
+	until a > 5 ;
+
+	for a := 1 to 3 do
+	begin
+		a := 24 ;
+	end ;
+
+	while a <= 5 do
+	begin
+		s := a ;
+	end ;
+end ;
 
 	
 	
