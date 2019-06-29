@@ -8,18 +8,14 @@ const
 
 	const_n = 50 ;
 
-
-
 type
 
 	type_ac = record  
 		record_a : Integer
 	end ;
-
-	type_ada = ada ;
 	
-	type_a = array [ 1 ] of String ;
-	type_b = array [ 1 . . 5 ] of Integer ;
+	array_a = array [ 1 ] of String ;
+	array_b = array [ 1 . . 5 ] of Integer ;
 
 	himpunan1 = set of Integer ;
 
@@ -27,50 +23,48 @@ type
 
 var
 	a , c , d : Integer ;
-	c : String ;
+	r : Real ;
+	e , f : String ;
 
-procedure B ( var b : bc ; var b : bc ) ;
+procedure percobaan ;
 begin
-	a := a + b ;
+	a := a + c ;
 end ;
 
-function c ( var b : bc ; var b : bc ) : ac ;
+function percobaan_ : ac ;
 begin
-	a := a + b ;
+	d := a + a ;
 end ;
 	
 begin
-	ada := ab ;
-	ada := ab ;
 
-	q := a * a ;
+	a := c + 2 ;
+	e := e + f ;
+	r := c / 2 ;
 
-	w := a + a + a ;
-
-	e := ( 1 - 2 + 3 ) ;
-
-	f := 1 + 2 > 2 - 3 ;
-
-	ada ( a , b ) ;
-
-	if as > ab then 
+	if c > d then 
 	begin 
-		a := b ;
+		a := a ;
 	end ;
 
-	if as > ab then 
+	if a > d then 
 	begin 
-		a := b ;
+		a := c ;
 	end
 	else 
 	begin
-		b := a ;
+		d := a ;
 	end ;
 
 	case d of 
-		'if' : a ;
-		'case' : a ;
-	end
+		'if' : begin
+				d := a ;
+			end ;
+		'case' : begin
+					a := 24 ;
+				end ;
+				
+	end ;
 
 	repeat
 		a := 1 + 2 ;
@@ -84,7 +78,7 @@ begin
 
 	while a <= 5 do
 	begin
-		s := a ;
+		d := a ;
 	end ;
 end ;
 
