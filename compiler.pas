@@ -36,6 +36,8 @@ Var
    report   : string;
    tndttpkurung : integer;
 
+   mode     : string;
+
 //      FOCC ==> Flow of Control check
 //      uniq ==> uniqueness_check variable
 
@@ -1607,16 +1609,77 @@ end;
 procedure errorHandling(token : string);
 begin
     case token of
+
+        'empty' : begin
+            report := 'Error 101 ( value not valid after '+hasilToken[j-1] + ' )';
+            GotoXY(37,7+i);write(report);
+            i := i + 1;
+            error := true;
+        end;
+
+        'program' : begin
+            report := 'Error 201 ( "program" not found token )';
+            GotoXY(37,7+i);write(report);
+            i := i + 1;
+            error := true;
+        end;
+
+        'begin' : begin
+            report := 'Error 202 ( "begin" not found after '+hasilToken[j-1] + ' )';
+            GotoXY(37,7+i);write(report);
+            i := i + 1;
+            error := true;
+        end;
+
+        'end' : begin
+            report := 'Error 203 ( "end" not found after '+hasilToken[j-1] + ' )';
+            GotoXY(37,7+i);write(report);
+            i := i + 1;
+            error := true;
+        end;
+
         ')' : begin
-            report := 'Error 201 ) : not found token )';
+            report := 'Error 204 ) : not found after '+hasilToken[j-1] + ' )';
             GotoXY(37,7+i);write(report);
+            i := i + 1;
             error := true;
         end;
+
         '(' : begin
-            report := 'Error 202 ( : not found token )';
+            report := 'Error 205 ( : not found after '+hasilToken[j-1] + ' )';
             GotoXY(37,7+i);write(report);
+            i := i + 1;
             error := true;
         end;
+
+        'identifier' : begin
+            report := 'Error 206 ( identifier not found after '+hasilToken[j-1] + ' )';
+            GotoXY(37,7+i);write(report);
+            i := i + 1;
+            error := true;
+        end;
+
+        'typeint' : begin
+            report := 'Error 207 ( typeint not found after '+hasilToken[j-1] + ' )';
+            GotoXY(37,7+i);write(report);
+            i := i + 1;
+            error := true;
+        end;
+
+        'typereal' : begin
+            report := 'Error 208 ( typereal not found token )';
+            GotoXY(37,7+i);write(report);
+            i := i + 1;
+            error := true;
+        end;
+
+        'typechar' : begin
+            report := 'Error 209 ( typechar not found token )';
+            GotoXY(37,7+i);write(report);
+            i := i + 1;
+            error := true;
+        end;
+        
     end;
 end;
 
@@ -1666,7 +1729,9 @@ end;
 procedure program_;
 begin
      writeln('');
+     akhir := true;
      cek('program');
+     akhir := true;
      identifier;
      akhir := true;
      cek(';');
@@ -1741,7 +1806,7 @@ var
    c  : integer;
 begin
     c := 1;
-    while c <= 5 do
+    while c <= 6 do
     begin
         case (c) of
             1   : begin
@@ -1780,12 +1845,22 @@ begin
             
             5   : begin
                     string_;
-                    akhir := true;
+                    // akhir := true;
                     if terima = true then
                     begin
                          break;
                     end;
                 end;
+            6   : begin
+                
+                    if (mode <> 'type') then
+                    begin
+                        akhir := true;
+                        errorHandling('empty');
+                        break;
+                    end;
+                    
+            end;
         end;
         c := c + 1;
     end;
@@ -1795,6 +1870,7 @@ end;
 procedure constant_definition;
 begin
     uniqueness_check(hasilToken[j]);
+    akhir := true;
     identifier;
     cek('=');
     constant;
@@ -1831,6 +1907,7 @@ begin
     case (cekToken) of
         'label'    : begin
                     cek('label');
+                    akhir := true;
                     label_;
                     
                     while hasilToken[j] = ',' do
@@ -2144,44 +2221,28 @@ var
    d  : char;
 begin
     c := 1;
-    while c <= 3 do
-    begin
-        d := hasilToken[j][1];
-        case (d) of
-            'r'   : begin
-                    record_type;
-                    if terima = true then
-                    begin
-                        break;
-                    end;
-                end;
+    d := hasilToken[j][1];
+    case (d) of
+        'r'   : begin
+                record_type;
+                
+            end;
 
-            'a'   : begin
-                    array_type;
-                    if terima = true then
-                    begin
-                        break;
-                    end;
-                end;
+        'a'   : begin
+                array_type;
+                
+            end;
 
-            's'   : begin
-                    set_type;
-                    if terima = true then
-                    begin
-                        break;
-                    end;
-                end;
+        's'   : begin
+                set_type;
+                
+            end;
 
-            'f'   : begin
-                    file_type;
-                    akhir := true;
-                    if terima = true then
-                    begin
-                        break;
-                    end;
-                end;
-        end;
-        c := c + 1;
+        'f'   : begin
+                file_type;
+                akhir := true;
+                
+            end;
     end;
 end;
 
@@ -2190,7 +2251,7 @@ var
    c  : integer;
 begin
     c := 1;
-    while c <= 5 do
+    while c <= 6 do
     begin
         case (c) of
             1   : begin
@@ -2234,6 +2295,10 @@ begin
                          break;
                     end;
                 end;
+            6   : begin
+                    errorHandling('empty');
+                    break;
+                end;
         end;
         c := c + 1;
     end;
@@ -2243,6 +2308,7 @@ end;
 procedure type_definition;
 begin
     uniqueness_check(hasilToken[j]);
+    akhir := true;
     identifier;
     cek('=');
     type_;
@@ -2252,17 +2318,22 @@ procedure type_definition_part;
 begin
     case (cekToken) of
         'type'  : begin
+                    mode := 'type';
                     cek('type');
                     type_definition;
-                    while (hasilKategori[j+1] = 'identifier') or
+                    while ((hasilKategori[j+1] = 'identifier') or
                     (hasilToken[j+1] = 'record') or
-                    (hasilToken[j+1] = 'array')  do
+                    (hasilToken[j+1] = 'array'))  do
                     begin
+                        if error = true then
+                            break;
                         cek(';');
                         type_definition;
                     end;
                     akhir := true;
                     cek(';');
+                    mode := '';
+                    
                 end;
     else
         empty;
@@ -2831,6 +2902,20 @@ begin
   identifier;
 end;
 
+procedure cekVariable(variable : string);
+var
+    i : integer;
+
+begin
+    i := 0;
+    write(length(uniqCek));
+    readln;
+    // while token <> uniqCek[i] do
+    // begin
+    //     i := i + 1; 
+    // end;
+end;
+
 procedure assignment_statement();
 var 
 i:Integer;
@@ -2844,11 +2929,17 @@ begin
                 type_checking(hasilToken[j],hasilKategori[j],hasilToken[j+1]);
                 if lagiPost = false then
                     postOneChar(hasilToken[j]); 
+
+                cekVariable('ada');
                 variable;
  
                 cek(':=');
                 if lagiPost = false then
                     postExpresion(';'); 
+                    
+                type_checking(hasilToken[j],hasilKategori[j],hasilToken[j+1]);
+                write(hasilToken[j]);
+                    readln;
                 expression(); 
 
                 if tndttpkurung > 0 then
@@ -3213,17 +3304,21 @@ end;
 procedure compound_statement();
 begin
     cek('begin');
-    statement();
-    // akhir := true;
-    cek(';');
-    while ((hasilToken[j] <> 'end')) do
+    if ((hasilToken[j] <> '') and 
+        (hasilToken[j] <> 'end')) then
     begin
-        // write('masuk');
         statement();
         // akhir := true;
         cek(';');
+        while ((hasilToken[j] <> 'end')) do
+        begin
+            // write('masuk');
+            statement();
+            // akhir := true;
+            cek(';');
+        end;
     end;
-    // akhir := true;
+    akhir := true;
     cek('end');
     if hasilToken[j] <> 'else' then
     begin
@@ -3257,7 +3352,17 @@ begin
     type_definition_part;
     variable_declaration_part;
     procedure_and_function_declaration_part;
+
+    if (hasilToken[j] <> 'begin') then
+    begin
+        errorHandling('begin');
+    end;
+
     statement_part;
+
+    write(hasilToken[j]);
+    readln;
+
 end;
 
 procedure parser;
@@ -3607,6 +3712,7 @@ Begin
     //scanner
     borderScanner;
     scanCode;
+    writeln;
     write('Lanutkan ke proses Parser');
     oke := 1;
     readln;
@@ -3619,11 +3725,13 @@ Begin
         parser;
         if error = false then
         begin
+            writeln;
             write('Lanjutkan ke proses Semantik');
             oke := 2;
         end
         else
         begin
+            writeln;
             write('Tidak diterima pada proses semantik');
             oke := 99;
         end;
@@ -3648,6 +3756,7 @@ Begin
             ('D I T O L A K');
             oke := 99;
         end;
+        writeln;
         write('Lanutkan ke proses Pembentukan kode');
     end;
     readln; 
