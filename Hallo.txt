@@ -1,41 +1,13 @@
 ﻿program sama ;
 
-label 1 , 2 ;
-
-const
-	const_a = 'anda' ;
-	const_b = 'budi' ;
-
-	const_n = 50 ;
-
-type
-
-	type_ac = record  
-		record_a : Integer
-	end ;
-	
-	array_a = array [ 1 ] of String ;
-	array_b = array [ 1 . . 5 ] of Integer ;
-
-	himpunan1 = set of Integer ;
-
-	himpunan2 = file of Integer ;
 
 var
 	a , c , d : Integer ;
 	r : Real ;
 	e , f : String ;
+
 	
 begin
-
-if a > d then 
-	begin 
-		a := c ;
-	end ;
+	q := c + 2 ;
 	
 end ;
-
-	
-	
-
-	 

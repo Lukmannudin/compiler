@@ -40,7 +40,6 @@ begin
 
 	a := c + 2 ;
 	e := e + f ;
-	r := c / 2 ;
 
 	if c > d then 
 	begin 
@@ -77,8 +76,3 @@ begin
 		d := a ;
 	end ;
 end ;
-
-	
-	
-
-	 

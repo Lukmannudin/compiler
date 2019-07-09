@@ -1679,6 +1679,13 @@ begin
             i := i + 1;
             error := true;
         end;
+
+        'noVar' : begin
+            report := 'Error 301 ( not found declaration variable )';
+            GotoXY(37,7+i);write(report);
+            i := i + 1;
+            error := true;
+        end;
         
     end;
 end;
@@ -1708,8 +1715,8 @@ begin
             error := true;
             errorHandling(terminal);
             // GotoXY(25,8+i); writeln(report);
-            GotoXY(25,8+i); writeln('Tidak Diterima terminal ' + terminal + ' dengan token masukan ' + cekToken);
-            readln;
+            // GotoXY(25,8+i); writeln('Tidak Diterima terminal ' + terminal + ' dengan token masukan ' + cekToken);
+            // readln;
             j := k + 1;
         end;
 end;
@@ -1855,7 +1862,6 @@ begin
                 
                     if (mode <> 'type') then
                     begin
-                        akhir := true;
                         errorHandling('empty');
                         break;
                     end;
@@ -2908,12 +2914,19 @@ var
 
 begin
     i := 0;
-    write(length(uniqCek));
-    readln;
-    // while token <> uniqCek[i] do
-    // begin
-    //     i := i + 1; 
-    // end;
+    // write(length(uniqCek));
+    // readln;
+    while ((variable <> uniqCek[i])) do
+    begin
+        if (i > length(uniqCek)) then
+        begin
+            error := true;
+            errorHandling('noVar');
+            break;
+        end;
+            
+        i := i + 1; 
+    end;
 end;
 
 procedure assignment_statement();
@@ -2926,42 +2939,44 @@ begin
         begin
         case i of
             0: begin
-                type_checking(hasilToken[j],hasilKategori[j],hasilToken[j+1]);
-                if lagiPost = false then
-                    postOneChar(hasilToken[j]); 
+                cekVariable(hasilToken[j]);
+                if (error = false) then
+                begin
+                    type_checking(hasilToken[j],hasilKategori[j],hasilToken[j+1]);
+                    if lagiPost = false then
+                        postOneChar(hasilToken[j]); 
 
-                cekVariable('ada');
-                variable;
- 
-                cek(':=');
-                if lagiPost = false then
-                    postExpresion(';'); 
+                    variable;
+    
+                    cek(':=');
+                    if lagiPost = false then
+                        postExpresion(';'); 
+                        
+                    type_checking(hasilToken[j],hasilKategori[j],hasilToken[j+1]);
                     
-                type_checking(hasilToken[j],hasilKategori[j],hasilToken[j+1]);
-                write(hasilToken[j]);
-                    readln;
-                expression(); 
+                    expression(); 
 
-                if tndttpkurung > 0 then
-                begin
-                    errorHandling(')');
-                end
-                else if tndttpkurung < 0 then
-                begin
-                    errorHandling('(');
-                end;
+                    if tndttpkurung > 0 then
+                    begin
+                        errorHandling(')');
+                    end
+                    else if tndttpkurung < 0 then
+                    begin
+                        errorHandling('(');
+                    end;
 
-                lagiPost := false;
+                    lagiPost := false;
 
-                if ((lagiPost = false) and
-                    (udah = false)) then
-                    postOneChar(':='); 
+                    if ((lagiPost = false) and
+                        (udah = false)) then
+                        postOneChar(':='); 
 
-                lagiPost := false;
+                    lagiPost := false;
 
-                if terima = true then
-                begin
-                    break;
+                    if terima = true then
+                    begin
+                        break;
+                    end;
                 end;           
             end;
 
@@ -3359,9 +3374,6 @@ begin
     end;
 
     statement_part;
-
-    write(hasilToken[j]);
-    readln;
 
 end;
 
