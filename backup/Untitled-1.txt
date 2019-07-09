@@ -50,10 +50,6 @@ begin
 	if a > d then 
 	begin 
 		a := c ;
-	end
-	else 
-	begin
-		d := a ;
 	end ;
 
 	case d of 

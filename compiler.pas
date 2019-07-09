@@ -1,5 +1,4 @@
-
-Program Project1;
+Program program331;
 
 Uses crt, wincrt;
 
@@ -20,16 +19,22 @@ Var
    y,x,u    : Integer; // uniq
    z        : integer; // type
    incPost  : integer;
+   oke      : integer;
    kutip    : boolean;
    cekToken, cekKate : String;
    akhir, terima     : boolean;
    note     : string;
 
-   FOCC : integer;
-   uniq : boolean;
-   typeSts : boolean;
+   FOCC     : integer;
+   uniq     : boolean;
+   typeSts  : boolean;
 
-   error : boolean;
+   error    : boolean;
+
+   lagiPost : boolean;
+
+   report   : string;
+   tndttpkurung : integer;
 
 //      FOCC ==> Flow of Control check
 //      uniq ==> uniqueness_check variable
@@ -1417,7 +1422,7 @@ begin
             if i = 22 then begin //untuk halaman baru
                 // GotoXY(35,7+i); Write('tekan enter untuk lanjutkan');
                 i := 1;
-                // readln;
+                readln;
                 clrscr;
             end;
 
@@ -1429,10 +1434,10 @@ begin
             hasilToken[k]       := token;
             hasilKategori[k]    := kategori;
 
-            //  gotoxy(30,7+i); write('|    |                  |                      |');
-            //  GotoXY(32,7+i); Write(k);
-            //  GotoXY(37,7+i); Write(hasilToken[k]);
-            //  GotoXY(62,7+i); Write(hasilKategori[k]);
+             gotoxy(30,7+i); write('|    |                  |                      |');
+             GotoXY(32,7+i); Write(k);
+             GotoXY(37,7+i); Write(hasilToken[k]);
+             GotoXY(62,7+i); Write(hasilKategori[k]);
 
             token := '';
             kategori := '';
@@ -1448,10 +1453,10 @@ begin
     begin
         i := i + 1;
 
-        if i = 22 then begin
+        if i = 22 then begin //untuk halaman baru
                 // GotoXY(35,7+i); Write('tekan enter untuk lanjutkan');
                 i := 1;
-                // readln;
+                readln;
                 clrscr;
             end;
 
@@ -1478,7 +1483,7 @@ end;
 function postfix(rumus:String):String; forward;
 procedure postExpresion(tanda : string); forward;
 procedure postStatment; forward;
-procedure postOneChar; forward;
+procedure postOneChar(masuk : string); forward;
 
 
 procedure flow_of_control_check(input : string);
@@ -1575,7 +1580,9 @@ begin
         z := z +1;
     end;
     
-    if opr = ';' then
+    if ((opr = ';') or 
+        (opr = ')') or 
+        (opr = '(')) then
         z := 0;
 end;
 
@@ -1588,7 +1595,7 @@ begin
     else
     begin
         typeSts := false;
-        note := 'tipe data salah tdak bolehh integer';
+        note := 'tipe data salah tidak boleh integer';
     end;
 end;
 
@@ -1597,10 +1604,27 @@ begin
     
 end;
 
+procedure errorHandling(token : string);
+begin
+    case token of
+        ')' : begin
+            report := 'Error 201 ) : not found token )';
+            GotoXY(37,7+i);write(report);
+            error := true;
+        end;
+        '(' : begin
+            report := 'Error 202 ( : not found token )';
+            GotoXY(37,7+i);write(report);
+            error := true;
+        end;
+    end;
+end;
+
 procedure cek(terminal : String);
 begin
 
-     if terminal = cekToken then
+     if ((terminal = cekToken) and
+        (error = false)) then
      begin
         terima := true;
         gotoxy(30,7+i); write('|    |                  |                      |');
@@ -1618,14 +1642,9 @@ begin
         if akhir = true then
         begin
 
-            // if FOCC <> 0 then
-            // begin
-            //     GotoXY(25,8+i); writeln('terjadi kesalahan pada flow of control check');
-            //     readln;
-            // end;
-                
-
             error := true;
+            errorHandling(terminal);
+            // GotoXY(25,8+i); writeln(report);
             GotoXY(25,8+i); writeln('Tidak Diterima terminal ' + terminal + ' dengan token masukan ' + cekToken);
             readln;
             j := k + 1;
@@ -2567,76 +2586,85 @@ procedure factor();
 var i: Integer;
 begin
     i := 0;
-    while i <= 5 do
+    if tndttpkurung >= 0 then
     begin
-        if (hasilToken[j] = ')') then
-            i := 3;
+        while i <= 5 do
+        begin
+            if (hasilToken[j] = ')') then
+                i := 3;
 
-        if ((hasilToken[j] = '=') or
-            (hasilToken[j] = '<>') or
-            (hasilToken[j] = '<') or
-            (hasilToken[j] = '<=') or
-            (hasilToken[j] = '>=') or
-            (hasilToken[j] = '>') or 
-            (hasilToken[j] = ',') or 
-            (hasilToken[j] = ';') or 
-            (hasilToken[j] = 'then') or 
-            (hasilToken[j] = 'end') or 
-            (hasilToken[j] = 'of') or 
-            (hasilToken[j] = 'end') or 
-            (hasilToken[j] = 'do') or 
-            (hasilToken[j] = 'until') or 
-            (hasilToken[j] = 'to') or 
-            (hasilToken[j] = 'downto')
-            
-        ) then
-            i := 5;
+            if ((hasilToken[j] = '=') or
+                (hasilToken[j] = '<>') or
+                (hasilToken[j] = '<') or
+                (hasilToken[j] = '<=') or
+                (hasilToken[j] = '>=') or
+                (hasilToken[j] = '>') or 
+                (hasilToken[j] = ',') or 
+                (hasilToken[j] = ';') or 
+                (hasilToken[j] = 'then') or 
+                (hasilToken[j] = 'end') or 
+                (hasilToken[j] = 'of') or 
+                (hasilToken[j] = 'end') or 
+                (hasilToken[j] = 'do') or 
+                (hasilToken[j] = 'until') or 
+                (hasilToken[j] = 'to') or 
+                (hasilToken[j] = 'downto')
+                
+            ) then
+                i := 5;
 
-        case i of
-            0:  begin
-                    variable;
-                    if terima = true then
-                    begin
-                        break;
+            case i of
+                0:  begin
+                        variable;
+                        if terima = true then
+                        begin
+                            break;
+                        end;
                     end;
+                1: begin 
+                        unsigned_constant;
+                        if terima = true then
+                        begin
+                            break;
+                        end;
+                    end;
+                2: begin
+                        cek('(');
+                        tndttpkurung := tndttpkurung + 1;
+                        expression();
+                        if terima = true then
+                        begin
+                            break;
+                        end;
+                    end;
+                
+                3: begin
+                        cek(')');
+                        // write('krung');
+                        if terima = true then
+                        begin
+                            tndttpkurung := tndttpkurung - 1;
+                            break;
+                        end;
                 end;
-            1: begin 
-                    unsigned_constant;
-                    if terima = true then
-                    begin
-                        break;
-                    end;
+                //   3: function_designator;
+                // 4: set_();
+                4: begin 
+                    cek('not');
+                    factor;
                 end;
-            2: begin
-                    cek('(');
-                    expression();
-                    if terima = true then
-                    begin
-                        break;
-                    end;
-                end;
-            
-            3: begin
-                    cek(')');
-                    
-                    if terima = true then
-                    begin
-                        break;
-                    end;
-            end;
-            //   3: function_designator;
-            // 4: set_();
-            4: begin 
-                cek('not');
-                factor;
-            end;
 
-            5:  begin
-                break;
+                5:  begin
+                    break;
+                end;
+                
             end;
-             
+            i := i + 1;
         end;
-        i := i + 1;
+    end
+    else
+    begin
+        errorHandling(')');
     end;
 end;
 
@@ -2654,21 +2682,40 @@ end;
 procedure term();
 var i:Integer;
 begin
-    factor;
-    type_checking(hasilToken[j-1],hasilKategori[j-1],hasilToken[j]);
-    if ((hasilToken[j] <> ';') and
-        (hasilToken[j] <> '+') and
-        (hasilToken[j] <> '-') and
-        (hasilToken[j] <> 'or') and
-        (hasilToken[j] <> ',') and
-        (hasilToken[j] <> ')') and
-        (hasilToken[j] <> 'end') and
-        (hasilToken[j] <> 'until')
-    ) then
+    // write(tndttpkurung);
+    // readln;
+    if (tndttpkurung >= 0) then
     begin
-        multiplying_operator();
         factor;
-        type_checking(hasilToken[j-1],hasilKategori[j-1],hasilToken[j]);
+        if ((hasilToken[j-1] <> '(') and 
+            (hasilToken[j-1] <> ')')) then
+        begin
+            // write(hasilToken[j-1]);
+            // readln;
+            type_checking(hasilToken[j-1],hasilKategori[j-1],hasilToken[j]);
+        end;
+
+        if ((hasilToken[j] <> ';') and
+            (hasilToken[j] <> '+') and
+            (hasilToken[j] <> '-') and
+            (hasilToken[j] <> 'or') and
+            (hasilToken[j] <> ',') and
+            (hasilToken[j] <> 'end') and
+            (hasilToken[j] <> 'until')
+        ) then
+        begin
+            multiplying_operator();
+            type_checking(hasilToken[j-1],hasilKategori[j-1],hasilToken[j]);
+            factor;
+            
+            if ((hasilToken[j-1] <> '(') and 
+            (hasilToken[j-1] <> ')')) then
+            begin
+                // write(hasilToken[j-1]);
+                // readln;
+                type_checking(hasilToken[j-1],hasilKategori[j-1],hasilToken[j]);
+            end;
+        end;
     end;
 end;
 
@@ -2693,6 +2740,7 @@ begin
         begin
         case i of 
             0:  begin
+            
                     term;
                     type_checking(hasilToken[j-1],hasilKategori[j-1],hasilToken[j]);
                     if ((hasilToken[j] <> ';') and
@@ -2784,18 +2832,42 @@ begin
 end;
 
 procedure assignment_statement();
-var i:Integer;
+var 
+i:Integer;
+udah : boolean;
 begin
+    udah := false ;
     for i:=0 to 2 do
         begin
         case i of
             0: begin
                 type_checking(hasilToken[j],hasilKategori[j],hasilToken[j+1]);
-                // postOneChar;
+                if lagiPost = false then
+                    postOneChar(hasilToken[j]); 
                 variable;
-                // postOneChar;
+ 
                 cek(':=');
-                expression();  
+                if lagiPost = false then
+                    postExpresion(';'); 
+                expression(); 
+
+                if tndttpkurung > 0 then
+                begin
+                    errorHandling(')');
+                end
+                else if tndttpkurung < 0 then
+                begin
+                    errorHandling('(');
+                end;
+
+                lagiPost := false;
+
+                if ((lagiPost = false) and
+                    (udah = false)) then
+                    postOneChar(':='); 
+
+                lagiPost := false;
+
                 if terima = true then
                 begin
                     break;
@@ -2854,31 +2926,30 @@ begin
     i := 0;
     while i <= 3 do
     begin
-    // readln;
+        if ((hasilToken[j+1] = '(')) then
+            i := 1;
+        case i of
+            0:  begin
+                    assignment_statement();
+                    break;
+                end;
 
+            1:  begin
+                    procedure_statement();
+                    break;
+                end;
+            
+            2:  begin
+                    go_to_statement();
+                    break;
+                end;
 
-    if ((hasilToken[j+1] = '(')) then
-        i := 1;
-    case i of
-        0:  begin
-                assignment_statement();
-                break;
-            end;
-        1:  begin
-                procedure_statement();
-                break;
-            end;
-        
-        2:  begin
-                go_to_statement();
-                break;
-            end;
-        3:  begin
-                empty_statement();
-                break;
-            end;
-        // 4: cek('salah');
-      end;
+            3:  begin
+                    empty_statement();
+                    break;
+                end;
+            // 4: cek('salah');
+        end;
     end;
 end;
 
@@ -2892,8 +2963,6 @@ begin
 end;
 
 procedure if_statement;
-var
-    inc : integer;
 begin
     cek('if');
     postExpresion('then');
@@ -2979,13 +3048,13 @@ end;
 
 procedure initial_value;
 begin
-    postExpresion(';');
+    // postExpresion(';');
     expression;
 end;
 
 procedure final_value;
 begin
-    postExpresion(';');
+    // postExpresion(';');
     expression;
 end;
 
@@ -3015,7 +3084,7 @@ begin
     cek(':=');
     for_list;
     cek('do');
-    postStatment;
+    // postStatment;
     statement;
 end;
 
@@ -3149,7 +3218,7 @@ begin
     cek(';');
     while ((hasilToken[j] <> 'end')) do
     begin
-        write('masuk');
+        // write('masuk');
         statement();
         // akhir := true;
         cek(';');
@@ -3214,7 +3283,7 @@ begin
         if FOCC < 0 then
             GotoXY(25+3,10+i); writeln('Ditemukan berlebihnya "end" ');
         error := true;
-        readln;
+        // readln;
     end;
         
     //jika tidak lulus uniqueness check
@@ -3227,7 +3296,7 @@ begin
             GotoXY(25+3,11+i);writeln(uniqData[i]);
             i := i + 1;
         end;
-        readln;
+        // readln;
     end;
         
     if typeSts = false then
@@ -3235,7 +3304,7 @@ begin
         GotoXY(25+3,9+i); writeln('terjadi kesalahan pada type chacking');
         GotoXY(25+3,10+i); writeln(note);
         error := true;
-        readln;
+        // readln;
     end;
 
     // uniqueness_check;
@@ -3409,7 +3478,7 @@ begin
             i := i + 1;
         p := '';
     end;//endfor
-    readln;
+    // readln;
     rumus := '';
 
 
@@ -3439,12 +3508,14 @@ begin
     end;
 end;
 
-procedure postOneChar;
+procedure postOneChar(masuk : string);
 var
     inc : integer;
 begin
     inc := j;
-    tokenPost := concat(tokenPost,hasilToken[inc]);
+    tokenPost := masuk;
+    postfix(tokenPost);
+    tokenPost := '';
 end;
 
 procedure postExpresion(tanda : string);
@@ -3459,6 +3530,7 @@ begin
     end;
     postfix(tokenPost);
     tokenPost := '';
+    lagiPost := true;
 end;
 
 procedure postStatment;
@@ -3475,10 +3547,11 @@ begin
             
         end;
         inc := inc + 1;
-        write(inc);
+        // write(inc);
     end;
     postfix(tokenPost);
     tokenPost := '';
+    lagiPost := true;
 end;
 
 procedure borderScanner;
@@ -3511,42 +3584,80 @@ begin
     u := 0;
     z := 0;
 
-    FOCC := 0;
-    uniq := false;
+    FOCC    := 0;
+    uniq    := false;
     typeSts := true;
 
-    awal := nil;
-    terakhir := nil;
-    incPost := 0; 
+    oke             := 0;
+
+    awal            := nil;
+    terakhir        := nil;
+    incPost         := 0; 
+
+    lagiPost        := false;
+
+    report          := '';
+
+    tndttpkurung    := 0;
 end;
 
 Begin
     init;
+
+    //scanner
     borderScanner;
     scanCode;
     write('Lanutkan ke proses Parser');
-    readln;
-    borderParser;
-    parser;
-    write('Lanutkan ke proses Semantik');
+    oke := 1;
     readln;
     clrscr;
-    semantik;
-    clrscr;
-    if error = false then
+
+    //Parser
+    if oke = 1 then
     begin
-        GotoXY(55,9+i);writeln('D I T E R I M A');
-    end
-    else
-    begin
-        GotoXY(55,9+i);writeln
-        ('D I T O L A K');
+        borderParser;
+        parser;
+        if error = false then
+        begin
+            write('Lanjutkan ke proses Semantik');
+            oke := 2;
+        end
+        else
+        begin
+            write('Tidak diterima pada proses semantik');
+            oke := 99;
+        end;
     end;
-    write('Lanutkan ke proses Pembentukan kode');
+    readln;
+    clrscr;
+
+    //semantik
+    if oke = 2 then
+    begin
+        clrscr;
+        semantik;
+        clrscr;
+        if error = false then
+        begin
+            GotoXY(55,9+i);writeln('D I T E R I M A');
+            oke := 3;
+        end
+        else
+        begin
+            GotoXY(55,9+i);writeln
+            ('D I T O L A K');
+            oke := 99;
+        end;
+        write('Lanutkan ke proses Pembentukan kode');
+    end;
     readln; 
-     
-    borderPostfix;
-    tampilPost;
+    clrscr;
+
+    if oke = 3 then
+    begin
+        borderPostfix;
+        tampilPost;
+    end;
 
 readln;
 End.
