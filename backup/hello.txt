@@ -1,0 +1,84 @@
+program sama ;
+
+label 1 , 2 ;
+
+const
+	const_a = 'anda' ;
+	const_b = 'budi' ;
+
+	const_n = 50 ;
+
+type
+
+	type_ac = record  
+		record_a : Integer
+	end ;
+	
+	array_a = array [ 1 ] of String ;
+	array_b = array [ 1 . . 5 ] of Integer ;
+
+	himpunan1 = set of Integer ;
+
+	himpunan2 = file of Integer ;
+
+var
+	a , c , d : Integer ;
+	r : Real ;
+	e , f : String ;
+
+procedure percobaan ;
+begin
+	a := a + c ;
+end ;
+
+function percobaan_ : ac ;
+begin
+	d := a + a ;
+end ;
+	
+begin
+
+	a := c + 2 ;
+	e := e + f ;
+	r := c / 2 ;
+
+	if c > d then 
+	begin 
+		a := a ;
+	end ;
+
+	if a > d then 
+	begin 
+		a := c ;
+	end ;
+
+	case d of 
+		'if' : begin
+				d := a ;
+			end ;
+		'case' : begin
+					a := 24 ;
+				end ;
+				
+	end ;
+
+	repeat
+		a := 1 + 2 ;
+		a := 1 + 2 ;
+	until a > 5 ;
+
+	for a := 1 to 3 do
+	begin
+		a := 24 ;
+	end ;
+
+	while a <= 5 do
+	begin
+		d := a ;
+	end ;
+end ;
+
+	
+	
+
+	 
