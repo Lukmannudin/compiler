@@ -1,6 +1,5 @@
 
-//Nama Saya Zafir
-Program program331;
+Program Project1;
 
 Uses crt, wincrt;
 
